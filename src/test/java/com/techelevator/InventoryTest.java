@@ -12,7 +12,7 @@ public class InventoryTest {
 	public void createMapFromFile() {
 		File testFile = new File("./mapTestFile.txt");
 		Inventory testInventory = new Inventory();
-		Map<String, Item> objectUnderTest = testInventory.runVendingMachine(testFile);
+		Map<String, Item> objectUnderTest = testInventory.stockVendingMachine(testFile);
 		
 		Assert.assertEquals("{A1=Potato Crisps 3.05 5, A2=Stackers 1.45 5, A3=Grain Waves 2.75 5}", objectUnderTest.toString());
 		
