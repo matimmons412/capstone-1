@@ -11,12 +11,12 @@ public class VendingMachine {
 		File inputFile = new File("./vendingmachine.csv");
 	
 		
-		Inventory vm800 = new Inventory();
-		Map<String, Item> itemMap = vm800.runVendingMachine(inputFile);
+		Inventory inventory = new Inventory();
+		Map<String, Item> itemMap = inventory.stockVendingMachine(inputFile);
 		
-		Menu testMenu = new Menu(itemMap, vm800);
+		Menu menu = new Menu(itemMap, inventory);
 		
-		testMenu.getMainMenu();
+		menu.getMainMenu();
 	 	 		   
 	}
 }

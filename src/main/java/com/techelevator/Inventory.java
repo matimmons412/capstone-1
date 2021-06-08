@@ -26,32 +26,21 @@ public class Inventory {
 
 	Map<String, Item> itemMap = new LinkedHashMap<>();
 	
-	
-	// Run this method to start the vending machine
-	public Map<String, Item> runVendingMachine(File inputFile) {
-	
-		
-		// try-with-resources
- 		try (Scanner fileScanner = new Scanner(inputFile)){ // create scanner to scan file
-			
-			while (fileScanner.hasNextLine()) { // read file line by line as long as there is a next line
-				String singleLine = fileScanner.nextLine(); // create string
-
-				String[] itemDetails = null; // create String array
-				
-				itemDetails = singleLine.split("\\|"); // splits line into array at pipe
+	public Map<String, Item> stockVendingMachine(File inputFile) {
+ 		try (Scanner fileScanner = new Scanner(inputFile)){
+			while (fileScanner.hasNextLine()) { 
+				String singleLine = fileScanner.nextLine(); 
+				String[] itemDetails = null;
+				itemDetails = singleLine.split("\\|");
 				if(itemDetails[3].equals("Chip")) {
 					Item newItem = new Chip(itemDetails[1], Double.parseDouble(itemDetails[2]));
 					itemMap.put(itemDetails[0], newItem);
-				
 				} else if (itemDetails[3].equals("Candy")) {
 					Item newItem = new Candy(itemDetails[1], Double.parseDouble(itemDetails[2]));
 					itemMap.put(itemDetails[0], newItem);
-				
 				} else if (itemDetails[3].equals("Drink")) {
 					Item newItem = new Drink(itemDetails[1], Double.parseDouble(itemDetails[2]));
 					itemMap.put(itemDetails[0], newItem);
-				
 				}else if (itemDetails[3].equals("Gum")) {
 					Item newItem = new Gum(itemDetails[1], Double.parseDouble(itemDetails[2]));
 					itemMap.put(itemDetails[0], newItem);
@@ -61,39 +50,26 @@ public class Inventory {
 			System.out.println("There is an error with the file.");
 			e.printStackTrace();
 			}
-
-		
 		return itemMap;
 	}
 	
-	
 	public String purchase(String productCode) {
 		double oldBalance = balance;
-		
 		if(!itemMap.containsKey(productCode)) {
 			System.out.println("The selected product code doesn't exist.");
 			return "The selected product code doesn't exist."; // return to Purchase Menu
 		}
-		
 		if(itemMap.containsKey(productCode)) {
 		 	Item currentItem = itemMap.get(productCode);
-
 			if(currentItem.getQuantity() == 0) {
-			
 			System.out.print("Product is SOLD OUT\n\n"); ; // newMenu.getPurchaseMenu(); <<-- need to return to purchase menu
 			return "Product is SOLD OUT"; // return to Purchase Menu
-			
-			} else if(balance >= currentItem.getPrice()) {
-																							
-			currentItem.reduceQuantity();// Qty - 1	 
-			
+			} else if(balance >= currentItem.getPrice()) {										
+			currentItem.reduceQuantity();
 			balance -= currentItem.getPrice();
-			System.out.println(currentItem.getName() + " $" + currentItem.getPrice() + " $" + balance + " " + "\"" +currentItem.getNoise() + "\"" + "\n");
-			
+			System.out.println(currentItem.getName() + " $" + currentItem.getPrice() + " $" + balance + " " + "\"" +currentItem.getNoise() + "\"" + "\n");	
 			createNewLogEntry(currentItem.getName() + " " + productCode, oldBalance, balance);
-			return ""; // return to Purchase Menu
-			
-			
+			return ""; // return to Purchase Menu	
 			} else {
 				System.out.println("Please enter more money."); // price exceeds balance 
 				return ""; // return to Purchase Menu
