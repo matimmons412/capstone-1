@@ -14,7 +14,7 @@ public class Menu {
 	private Scanner userInput = new Scanner(System.in);
 	private String userSelection;
 	private Inventory newInventory;
-	List<String> validBillAmounts = new ArrayList<>();
+	private List<String> validBillAmounts = new ArrayList<>();
 	private List<String> validMenuInputs = new ArrayList<>();
 	private Map<String, Item> itemMap;
 	private boolean validMoney;
@@ -122,18 +122,6 @@ public class Menu {
 		}
 	}
 	
-	private void mainMenuOptionOne() {
-
-	}
-	
-	private void mainMenuOptionTwo() {
-		
-	}
-	
-	private void mainMenuOptionThree() {
-		
-	}
-	
 	private void showPurchaseOptionOne() {
 		while (!validMoney) {
 			System.out.println("Please enter amount in whole dollars (1, 2, 5, & 10 is accepted): "); 																							
@@ -157,6 +145,7 @@ public class Menu {
 		newInventory.setBalance(0);
 		System.out.println("Transaction Complete\n");
 	}
+	
 	private void addMoneyToUserBalance(){
 		try {
 			if (newInventory.feedMoney(Double.parseDouble(userSelection))) {
