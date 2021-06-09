@@ -24,7 +24,7 @@ public class Menu {
 		this.itemMap = itemMap;
 	}
 
-	public void getMainMenu() {
+	public void showMainMenu() {
 		createValidMenuOptions();
 		while (!validInput) {
 			printMainMenu();
@@ -36,15 +36,17 @@ public class Menu {
 					getUserInput();
 					if (userSelection.equalsIgnoreCase("R")) {
 						continue;
+						
 					} else {
 						continue;
 					}
+					
 				} else if (userSelection.equals("2")) {
-					getPurchaseMenu();
+					showPurchaseMenu();
+					
 				} else if (userSelection.equals("3")) {
-					System.out.println("Thank you for your business.");
-					System.out.println("Have a great day!");
-					System.exit(0);
+					exitVendingMachine();
+					
 				} else {
 					System.out.println("Invalid selection, please choose a valid option.");
 					continue;
@@ -53,44 +55,26 @@ public class Menu {
 		}
 	}
 
-	public void getPurchaseMenu() {
+	public void showPurchaseMenu() {
 		createValidBillAmounts();
 		while (!validInput) {
 			printPurchaseMenu();
 			if (validMenuInputs.contains(userSelection)) {
 				if (userSelection.equals("1")) {
-					while (!validMoney) {
-						System.out.println("Please enter amount in whole dollars (1, 2, 5, & 10 is accepted): "); 																							
-						getUserInput();
-						addMoneyToUserBalance();
-					}
+					showPurchaseOptionOne();
 
 				} else if (userSelection.equals("2")) {
-					displayVendingMachineInventory();
-
-					System.out.println("Please enter Product Code selection");
-
-					getUserInput(); // returns userSelection -- String
-
-					newInventory.purchase(userSelection);
-
+					showPurchaseOptionTwo();
 					continue;
 
 				} else if (userSelection.equals("3")) {
+					showPurchaseOptionThree();
+					return;
 
-					double oldBalance = newInventory.getBalance();
-					System.out.println(
-							newInventory.coinChange(newInventory.depositCashAsPennies(newInventory.getBalance())));
-
-					newInventory.createNewLogEntry("GIVE CHANGE: ", oldBalance, newInventory.getBalance());
-					newInventory.balance = 0;// balance re-set to 0 AKA balance
-
-					System.out.println("Transaction Complete\n");
-					return;// return to Main Menu
-
-				} else {
-					System.out.println("Invalid selection, please choose a valid option.");
-					continue;
+			} else {
+				System.out.println("Invalid selection, please choose a valid option.");
+				continue;
+					
 				}
 			}
 		}
@@ -137,6 +121,42 @@ public class Menu {
 			System.out.println(entry.getKey() + " " + entry.getValue());
 		}
 	}
+	
+	private void mainMenuOptionOne() {
+
+	}
+	
+	private void mainMenuOptionTwo() {
+		
+	}
+	
+	private void mainMenuOptionThree() {
+		
+	}
+	
+	private void showPurchaseOptionOne() {
+		while (!validMoney) {
+			System.out.println("Please enter amount in whole dollars (1, 2, 5, & 10 is accepted): "); 																							
+			getUserInput();
+			addMoneyToUserBalance();
+		}
+	}
+	
+	private void showPurchaseOptionTwo() {
+		displayVendingMachineInventory();
+		System.out.println("Please enter Product Code selection");
+		getUserInput(); 
+		newInventory.purchase(userSelection);
+	}
+	
+	private void showPurchaseOptionThree() {
+		double oldBalance = newInventory.getBalance();
+		System.out.println(
+				newInventory.coinChange(newInventory.depositCashAsPennies(newInventory.getBalance())));
+		newInventory.createNewLogEntry("GIVE CHANGE: ", oldBalance, newInventory.getBalance());
+		newInventory.setBalance(0);
+		System.out.println("Transaction Complete\n");
+	}
 	private void addMoneyToUserBalance(){
 		try {
 			if (newInventory.feedMoney(Double.parseDouble(userSelection))) {
@@ -150,5 +170,11 @@ public class Menu {
 			System.out.println("\nInvalid Currency Amount, Only $1s, $2s, $5s, and $10s accepted.\n");
 
 		}
+	}
+	
+	private void exitVendingMachine() {
+		System.out.println("Thank you for your business.");
+		System.out.println("Have a great day!");
+		System.exit(0);
 	}
 }

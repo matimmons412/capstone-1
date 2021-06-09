@@ -20,7 +20,7 @@ import java.util.Set;
 
 public class Inventory {
     	
-	double balance;
+	private double balance;
 	
 	List <String> inventoryList = new ArrayList<>();
 
@@ -57,22 +57,22 @@ public class Inventory {
 		double oldBalance = balance;
 		if(!itemMap.containsKey(productCode)) {
 			System.out.println("The selected product code doesn't exist.");
-			return "The selected product code doesn't exist."; // return to Purchase Menu
+			return "The selected product code doesn't exist.";
 		}
 		if(itemMap.containsKey(productCode)) {
 		 	Item currentItem = itemMap.get(productCode);
 			if(currentItem.getQuantity() == 0) {
-			System.out.print("Product is SOLD OUT\n\n"); ; // newMenu.getPurchaseMenu(); <<-- need to return to purchase menu
-			return "Product is SOLD OUT"; // return to Purchase Menu
+			System.out.print("Product is SOLD OUT\n\n"); ;
+			return "Product is SOLD OUT"; 
 			} else if(balance >= currentItem.getPrice()) {										
 			currentItem.reduceQuantity();
 			balance -= currentItem.getPrice();
 			System.out.println(currentItem.getName() + " $" + currentItem.getPrice() + " $" + balance + " " + "\"" +currentItem.getNoise() + "\"" + "\n");	
 			createNewLogEntry(currentItem.getName() + " " + productCode, oldBalance, balance);
-			return ""; // return to Purchase Menu	
+			return "";
 			} else {
-				System.out.println("Please enter more money."); // price exceeds balance 
-				return ""; // return to Purchase Menu
+				System.out.println("Please enter more money."); 
+				return ""; 
 			}
 		}
 		return null;
@@ -95,14 +95,10 @@ public class Inventory {
 	
 	
 	public boolean createNewLogEntry(String step, double oldBalance, double newBalance) {
-		
 		String fileName = "log.txt";
-
-		
 		LocalDateTime myDateObj = LocalDateTime.now();
 		DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss a");
-		String formattedDate = myDateObj.format(myFormatObj);
-		
+		String formattedDate = myDateObj.format(myFormatObj);		
 		File filePath = new File(".");
 		fileName = "log.txt";
 		File logFile = new File(filePath, fileName);
@@ -111,22 +107,15 @@ public class Inventory {
 				try {
 					logFile.createNewFile();
 					PrintWriter fileWriter = new PrintWriter(new FileWriter(fileName, true));
-	
 					fileWriter.printf(formattedDate + " " + step + " " + "$" + oldBalance + " " + "$" + newBalance + "\n");
-	
 					fileWriter.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			} else if (logFile.exists()) {
-			try(PrintWriter fileWriter = new PrintWriter(new FileWriter(fileName, true))) {
-			
-	
-				
-				fileWriter.printf(formattedDate + " "+ step + " " + "$" + oldBalance + " " + "$" + newBalance + "\n");
-				
-			} catch (IOException e) {
-				
+			try(PrintWriter fileWriter = new PrintWriter(new FileWriter(fileName, true))) {		
+				fileWriter.printf(formattedDate + " "+ step + " " + "$" + oldBalance + " " + "$" + newBalance + "\n");			
+			} catch (IOException e) {			
 				e.printStackTrace();
 				}
 			}
@@ -134,7 +123,6 @@ public class Inventory {
 		}
 		return false;	
 	}
-
 	
 	public double depositCashAsPennies (double deposit) {
 		return  (deposit * 100);
@@ -157,14 +145,16 @@ public class Inventory {
 				balance -= (int)dimesDue * 10;
 				nickelsDue = balance / 5;                              
 			}                                                                  
-		                                                                       
-		                                                                       
+		                                                                      
 		return "Here are your coins: " + (int)quartersDue + " Quarter(s), " 
 				+ (int)dimesDue + " Dime(s), and " + (int)nickelsDue + " Nickel(s).";		
 	}
 	
 	public double getBalance() {
 		return balance;
+	}
+	public void setBalance(double newBalance) {
+		this.balance = newBalance;
 	}
 }
 
