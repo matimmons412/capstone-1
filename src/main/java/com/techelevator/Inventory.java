@@ -21,78 +21,110 @@ import java.util.Set;
 public class Inventory {
     	
 	private double balance;
-	
-	List <String> inventoryList = new ArrayList<>();
 
-	Map<String, Item> itemMap = new LinkedHashMap<>();
+	private Map<String, Item> itemInventory = new LinkedHashMap<>();
 	
 	public Map<String, Item> stockVendingMachine(File inputFile) {
  		try (Scanner fileScanner = new Scanner(inputFile)){
 			while (fileScanner.hasNextLine()) { 
-				String singleLine = fileScanner.nextLine(); 
-				String[] itemDetails = null;
-				itemDetails = singleLine.split("\\|");
-				if(itemDetails[3].equals("Chip")) {
-					Item newItem = new Chip(itemDetails[1], Double.parseDouble(itemDetails[2]));
-					itemMap.put(itemDetails[0], newItem);
+				String lineFromFile = fileScanner.nextLine(); 
+				String[] itemDetails = lineFromFile.split("\\|");
+				
+				if (itemDetails[3].equals("Chip")) {
+					makeNewChipItemFrom(itemDetails);
+					
 				} else if (itemDetails[3].equals("Candy")) {
-					Item newItem = new Candy(itemDetails[1], Double.parseDouble(itemDetails[2]));
-					itemMap.put(itemDetails[0], newItem);
+					makeNewCandyItemFrom(itemDetails);
+					
 				} else if (itemDetails[3].equals("Drink")) {
-					Item newItem = new Drink(itemDetails[1], Double.parseDouble(itemDetails[2]));
-					itemMap.put(itemDetails[0], newItem);
-				}else if (itemDetails[3].equals("Gum")) {
-					Item newItem = new Gum(itemDetails[1], Double.parseDouble(itemDetails[2]));
-					itemMap.put(itemDetails[0], newItem);
+					makeNewDrinkItemFrom(itemDetails);
+					
+				} else if (itemDetails[3].equals("Gum")) {
+					makeNewGumItemFrom(itemDetails);
+					
 				}		
 			}
+			
 		} catch (FileNotFoundException e) {
-			System.out.println("There is an error with the file.");
+			System.out.println("There is an error with the file. File Not Found.");
 			e.printStackTrace();
 			}
-		return itemMap;
+		return itemInventory;
 	}
 	
-	public String purchase(String productCode) {
+	public void makeNewChipItemFrom(String[] itemDetails) {
+		Item newItem = new Chip(itemDetails[1], Double.parseDouble(itemDetails[2]));
+		itemInventory.put(itemDetails[0], newItem);
+	}
+	
+	public void makeNewCandyItemFrom(String[] itemDetails) {
+		Item newItem = new Candy(itemDetails[1], Double.parseDouble(itemDetails[2]));
+		itemInventory.put(itemDetails[0], newItem);
+	}
+	
+	public void makeNewDrinkItemFrom(String[] itemDetails) {
+		Item newItem = new Drink(itemDetails[1], Double.parseDouble(itemDetails[2]));
+		itemInventory.put(itemDetails[0], newItem);
+	}
+	
+	public void makeNewGumItemFrom(String[] itemDetails) {
+		Item newItem = new Gum(itemDetails[1], Double.parseDouble(itemDetails[2]));
+		itemInventory.put(itemDetails[0], newItem);
+	}
+	
+	public boolean purchaseItem(String productCode) {
 		double oldBalance = balance;
-		if(!itemMap.containsKey(productCode)) {
+		boolean productExists = checkIfItemExistsUsing(productCode);
+		boolean purchaseOutcome = false;
+		
+		if(productExists) {
+		 	Item selectedItem = itemInventory.get(productCode);
+		 	boolean itemInStock = checkInventoryQuantity(selectedItem);
+		 	if (itemInStock) {
+		 		if(balance >= selectedItem.getPrice()) {										
+		 			printPurchseDetails(selectedItem, productCode, oldBalance);
+		 			purchaseOutcome = true;
+		 		} else {
+		 			System.out.println("Please enter more money."); 
+		 		}
+		 	}
+		}
+		return purchaseOutcome;
+		
+	}
+	
+	private boolean checkIfItemExistsUsing(String productCode) {
+		if(!itemInventory.containsKey(productCode)) {
 			System.out.println("The selected product code doesn't exist.");
-			return "The selected product code doesn't exist.";
+			return false;
+		} else {
+			return true;
 		}
-		if(itemMap.containsKey(productCode)) {
-		 	Item currentItem = itemMap.get(productCode);
-			if(currentItem.getQuantity() == 0) {
+	}
+	
+	private void printPurchseDetails(Item selectedItem, String productCode, double oldBalance) {
+		selectedItem.reduceQuantity();
+		balance -= selectedItem.getPrice();
+		System.out.println(selectedItem.getName() + " $" + selectedItem.getPrice() + " $" + balance + " " + "\"" +selectedItem.getNoise() + "\"" + "\n");	
+		createNewLogEntry(selectedItem.getName() + " " + productCode, oldBalance, balance);
+	}
+	
+	private boolean checkInventoryQuantity(Item selectedItem) {
+		if(selectedItem.getQuantity() == 0) {
 			System.out.print("Product is SOLD OUT\n\n"); ;
-			return "Product is SOLD OUT"; 
-			} else if(balance >= currentItem.getPrice()) {										
-			currentItem.reduceQuantity();
-			balance -= currentItem.getPrice();
-			System.out.println(currentItem.getName() + " $" + currentItem.getPrice() + " $" + balance + " " + "\"" +currentItem.getNoise() + "\"" + "\n");	
-			createNewLogEntry(currentItem.getName() + " " + productCode, oldBalance, balance);
-			return "";
-			} else {
-				System.out.println("Please enter more money."); 
-				return ""; 
-			}
+			return false; 
+		} else {
+			return true;
 		}
-		return null;
 	}
 	
-	public boolean feedMoney(double addMoney) {
-
+	public boolean feedMoney(String userSelection) {
+		double moneyToAdd = Double.parseDouble(userSelection);
 		double oldBalance = getBalance();
-	
-		Set<Double> values = new HashSet<Double>(Arrays.asList(new Double[] {1.00, 2.00, 5.00, 10.00}));
-			if(values.contains(addMoney)) {
-				balance += addMoney;
-				createNewLogEntry("FEED MONEY: ", oldBalance, getBalance());
-				return true;
-			} 
-		
-		return false;
-		
+		balance += moneyToAdd;
+		createNewLogEntry("FEED MONEY: ", oldBalance, balance);
+		return true;
 	}
-	
 	
 	public boolean createNewLogEntry(String step, double oldBalance, double newBalance) {
 		String fileName = "log.txt";
@@ -128,12 +160,10 @@ public class Inventory {
 		return  (deposit * 100);
 	}
 	
-	public String coinChange (double balance) {
-		
+	public String makeCoinChange (double balance) {		
 		double quartersDue = 0;
 		double dimesDue = 0;                                                      
-		double nickelsDue = 0;                                                    
-		                                                                       
+		double nickelsDue = 0;                                                    	                                                                       
 		// Balance counter moves through 25s, to 10s, to 5s                    
 			if (balance % 25 == 0) {                                         
 				quartersDue = balance / 25;                                  

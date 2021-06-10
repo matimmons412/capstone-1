@@ -124,7 +124,7 @@ public class Menu {
 	
 	private void showPurchaseOptionOne() {
 		while (!validMoney) {
-			System.out.println("Please enter amount in whole dollars (1, 2, 5, & 10 is accepted): "); 																							
+			System.out.println("\nPlease enter amount in whole dollars ($1s, $2s, $5s, and $10s accepted.): "); 																							
 			getUserInput();
 			addMoneyToUserBalance();
 		}
@@ -134,13 +134,13 @@ public class Menu {
 		displayVendingMachineInventory();
 		System.out.println("Please enter Product Code selection");
 		getUserInput(); 
-		newInventory.purchase(userSelection);
+		newInventory.purchaseItem(userSelection);
 	}
 	
 	private void showPurchaseOptionThree() {
 		double oldBalance = newInventory.getBalance();
 		System.out.println(
-				newInventory.coinChange(newInventory.depositCashAsPennies(newInventory.getBalance())));
+				newInventory.makeCoinChange(newInventory.depositCashAsPennies(newInventory.getBalance())));
 		newInventory.createNewLogEntry("GIVE CHANGE: ", oldBalance, newInventory.getBalance());
 		newInventory.setBalance(0);
 		System.out.println("Transaction Complete\n");
@@ -148,7 +148,8 @@ public class Menu {
 	
 	private void addMoneyToUserBalance(){
 		try {
-			if (newInventory.feedMoney(Double.parseDouble(userSelection))) {
+			if (validBillAmounts.contains(userSelection)) {
+				newInventory.feedMoney(userSelection);
 				System.out.println("\n$" + userSelection + " was added to your balance.");
 				validMoney = true;
 			} else {
@@ -157,7 +158,6 @@ public class Menu {
 			}
 		} catch (NumberFormatException e) {
 			System.out.println("\nInvalid Currency Amount, Only $1s, $2s, $5s, and $10s accepted.\n");
-
 		}
 	}
 	
